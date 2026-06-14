@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>On Earth Quiz</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:linear-gradient(135deg,#0f172a,#1e293b,#334155);
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+}
+
+.container{
+    width:90%;
+    max-width:800px;
+}
+
+.card{
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(10px);
+    border-radius:20px;
+    padding:30px;
+    text-align:center;
+    animation:fade 0.8s ease;
+}
+
+.logo{
+    font-size:50px;
+    font-weight:bold;
+    color:#00ffd5;
+    text-shadow:0 0 25px #00ffd5;
+    margin-bottom:20px;
+}
+
+button,select{
+    padding:12px 20px;
+    border:none;
+    border-radius:10px;
+    margin:10px;
+    font-size:16px;
+}
+
+button{
+    background:#00b894;
+    color:white;
+    cursor:pointer;
+}
+
+button:hover{
+    transform:scale(1.05);
+}
+
+.hidden{
+    display:none;
+}
+
+.question{
+    font-size:24px;
+    margin-bottom:20px;
+}
+
+.options{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+}
+
+.option{
+    background:#334155;
+    padding:15px;
+    border-radius:12px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.option:hover{
+    transform:translateY(-3px);
+}
+
+.correct{
+    background:#00c853 !important;
+    box-shadow:0 0 30px #00ff00;
+}
+
+.wrong{
+    background:#ff1744 !important;
+    box-shadow:0 0 30px red;
+}
+
+.score{
+    margin-bottom:15px;
+    font-size:20px;
+}
+
+#message{
+    margin-top:20px;
+    font-size:22px;
+}
+
+@keyframes fade{
+    from{
+        opacity:0;
+        transform:translateY(20px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<div id="home" class="card">
+    <div class="logo">🌍 ON EARTH</div>
+
+    <h2>Select Difficulty</h2>
+
+    <select id="difficulty">
+        <option>Easy</option>
+        <option>Medium</option>
+        <option>Hard</option>
+    </select>
+
+    <br>
+
+    <button onclick="startGame()">▶ Play</button>
+</div>
+
+<div id="quiz" class="card hidden">
+
+    <div class="score">
+        Score: <span id="score">0</span>
+    </div>
+
+    <div id="question" class="question"></div>
+
+    <div class="options">
+        <div class="option" onclick="checkAnswer(this)"></div>
+        <div class="option" onclick="checkAnswer(this)"></div>
+        <div class="option" onclick="checkAnswer(this)"></div>
+        <div class="option" onclick="checkAnswer(this)"></div>
+    </div>
+
+    <div id="message"></div>
+
+    <button id="retryBtn" class="hidden" onclick="retryQuestion()">
+        Try Again
+    </button>
+
+</div>
+
+</div>
+
+<script>
+
+// Add as many questions as you want here
+const questions = [
+
+{
+question:"What is the capital of Nepal?",
+options:["Kathmandu","Pokhara","Biratnagar","Butwal"],
+answer:"Kathmandu"
+},
+
+{
+question:"What is the capital of Japan?",
+options:["Tokyo","Osaka","Kyoto","Nagoya"],
+answer:"Tokyo"
+},
+
+{
+question:"Largest ocean in the world?",
+options:["Indian","Pacific","Atlantic","Arctic"],
+answer:"Pacific"
+},
+
+{
+question:"Which planet is called the Red Planet?",
+options:["Earth","Mars","Venus","Saturn"],
+answer:"Mars"
+},
+
+{
+question:"Who invented the telephone?",
+options:["Bell","Newton","Einstein","Tesla"],
+answer:"Bell"
+},
+
+{
+question:"Which country has the pyramids?",
+options:["India","Egypt","China","Brazil"],
+answer:"Egypt"
+},
+
+{
+question:"What is the tallest mountain?",
+options:["K2","Everest","Kilimanjaro","Makalu"],
+answer:"Everest"
+},
+
+{
+question:"What is the largest continent?",
+options:["Europe","Africa","Asia","Australia"],
+answer:"Asia"
+},
+
+{
+question:"Who painted Mona Lisa?",
+options:["Picasso","Van Gogh","Da Vinci","Rembrandt"],
+answer:"Da Vinci"
+},
+
+{
+question:"Fastest land animal?",
+options:["Lion","Tiger","Cheetah","Horse"],
+answer:"Cheetah"
+}
+
+];
+
+let currentQuestion;
+let score = 0;
+
+function startGame(){
+    document.getElementById("home").classList.add("hidden");
+    document.getElementById("quiz").classList.remove("hidden");
+    loadQuestion();
+}
+
+function loadQuestion(){
+
+    document.getElementById("message").innerHTML="";
+    document.getElementById("retryBtn").classList.add("hidden");
+
+    currentQuestion =
+        questions[Math.floor(Math.random()*questions.length)];
+
+    document.getElementById("question").innerText =
+        currentQuestion.question;
+
+    const opts=document.querySelectorAll(".option");
+
+    opts.forEach((o,i)=>{
+        o.innerText=currentQuestion.options[i];
+        o.classList.remove("correct","wrong");
+        o.style.pointerEvents="auto";
+    });
+}
+
+function checkAnswer(el){
+
+    const opts=document.querySelectorAll(".option");
+
+    if(el.innerText===currentQuestion.answer){
+
+        el.classList.add("correct");
+
+        document.getElementById("message").innerHTML=
+        "✅ Correct!";
+
+        score++;
+        document.getElementById("score").innerText=score;
+
+        opts.forEach(x=>x.style.pointerEvents="none");
+
+        setTimeout(loadQuestion,1500);
+
+    }else{
+
+        el.classList.add("wrong");
+
+        document.getElementById("message").innerHTML=
+        "❌ Wrong Answer";
+
+        document.getElementById("retryBtn")
+        .classList.remove("hidden");
+
+        opts.forEach(x=>x.style.pointerEvents="none");
+    }
+}
+
+function retryQuestion(){
+
+    document.querySelectorAll(".option").forEach(x=>{
+        x.classList.remove("wrong");
+        x.style.pointerEvents="auto";
+    });
+
+    document.getElementById("message").innerHTML="";
+    document.getElementById("retryBtn")
+    .classList.add("hidden");
+}
+
+</script>
+
+</body>
+</html>
